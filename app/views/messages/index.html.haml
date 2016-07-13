@@ -8,7 +8,7 @@
           Message from
           = msg.response_name + ",    "
           Sent
-          = msg.created_at
+          = msg.created_at.strftime("%A %B #{msg.created_at.day.ordinalize} %Y, at %l:%M%P")
         %p
           = msg.body
         -if msg.response_type != "none_required"
