@@ -1,0 +1,22 @@
+%h1
+  Messages
+%div.row
+  %div
+    - @messages.each do |msg|
+      %div
+        %h4
+          Message from
+          = msg.response_name + ",    "
+          Sent
+          = msg.created_at
+        %p
+          = msg.body
+        -if msg.response_type != "none_required"
+          %h6
+            respond by
+            = msg.response_type
+            at
+            - if msg.response_type == "email"
+              = msg.response_email
+            -else
+              = msg.response_phone
