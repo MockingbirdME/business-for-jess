@@ -1,29 +1,29 @@
 = form_for [message] do |f|
   - if message.errors.any?
-    %div.alert.alert-danger
+    .alert.alert-danger
       %h4
         = pluralize(message.errors.count, "error")
       %ul
         - message.errors.full_messages.each do |msg|
           %li
             = msg
-  %div.form-group
+  .form-group
     = f.text_area :body, rows: 12, class: "form-control", autofocus: true, placeholder: "Enter message text"
-  %div.form-group
+  .form-group
     %p
       How would you like to receive your response?
-      = f.select :response_type, Message.response_types.keys.to_a, id: "my_select", onchange: "change_display_options(this);"
-  %div.form-group#name_input
+      = f.select :response_type, Message.response_types.keys.to_a, {}, id: "my_select"
+  .form-group#name_input
     %p
       What's your name?
       = f.text_field :response_name, class: "form-control", placeholder: "Enter your name"
-  %div.form-group#email_input
+  .form-group#email_input
     %p
       What's the best email to reach you at?
       = f.text_field :response_email, class: "form-control", placeholder: "Enter your email"
-  %div.form-group#phone_input
+  .form-group#phone_input
     %p
       What's the best phone number to reach you at?
       = f.text_field :response_phone, class: "form-control", placeholder: "Enter your phone number"
-  %div.form-group
+  .form-group
     = f.submit "Send", class: 'btn btn-success'

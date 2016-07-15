@@ -14,7 +14,6 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails'
   gem 'shoulda'
   gem 'simplecov'
 end
@@ -23,6 +22,7 @@ group :development, :test do
   gem 'spring'
   gem 'faker'
   gem 'factory_girl_rails'
+  gem 'rspec-rails'
 end
 
 gem 'sass-rails', '~> 5.0'
