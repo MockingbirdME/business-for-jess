@@ -1,0 +1,35 @@
+!!!
+%html
+  %head
+    %title
+      Jess's site
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+
+    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
+    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    = csrf_meta_tags
+  %body
+    %div.container#content_section
+      %div.row
+        %div.col-md-12
+          %br
+          - flash.each do |key, value|
+            %div.alert{ :class => "alert-<%= key %>"}
+              = value
+          %br
+          %div.row
+            %nav.col-xs-3
+              %br
+              %ul.nav.navbar.navbar-left.navbar-inverse#sidebar
+                %li
+                  = link_to "Home", root_path
+                %li>
+                  = link_to "Services", services_path
+                %li
+                  = link_to "FAQ", faq_path
+                %li
+                  = link_to "Contact Us", new_message_path
+                %li
+                  = link_to "My Account", root_path
+            %div.col-xs-9.jumbotron
+              = yield
