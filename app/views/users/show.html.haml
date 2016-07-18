@@ -1,0 +1,55 @@
+.row
+  %h3.text-center
+    My Info
+  .pull-left
+    %h4
+      Name:
+      = @user.name
+    %h4
+      email:
+      =@user.email
+    %h4
+      phone number:
+      = @user.phone
+  .buttons.pull-right
+    - if @user == current_user
+      = link_to 'Edit Info', edit_user_registration_path, class: 'btn btn-success'
+.row
+  %h3.text-center
+    My Pets
+.row
+  .col-xs-3
+    %h4
+      Name/
+      %br group
+  .col-xs-3
+    %h4
+      Animal
+  .col-xs-5
+    %h4
+      description
+  .col-xs-1
+- @user.pets.each do |pet|
+  .row
+    .col-xs-3
+      %h5
+        = pet.name
+    .col-xs-3
+      %h5
+        - if pet.animal_type == 'small_animals'
+          = "small animals(#{pet.quantity})" unless pet.quantity == 1
+        -else
+          = pet.animal_type
+          = "(#{pet.quantity})" unless pet.quantity == 1
+    .col-xs-5
+      %h6.small
+        = pet.description
+    .col-xs-1
+      - if @user == current_user
+        = link_to 'edit', edit_user_pet_path(@user, id: pet.id)
+.buttons.text-center
+  - if @user == current_user
+    = link_to 'Add pet', new_user_pet_path(@user), class: 'btn btn-success'
+.row
+  %h3.text-center
+    My Bookings
