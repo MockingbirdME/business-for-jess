@@ -29,7 +29,13 @@
                   = link_to "FAQ", faq_path
                 %li
                   = link_to "Contact Us", new_message_path
-                %li
-                  = link_to "My Account", root_path
+                - if user_signed_in?
+                  %li
+                    = link_to "My Account", user_path(current_user)
+                - else
+                  %li
+                    = link_to "Create Account", new_user_registration_path
+                  %li
+                    = link_to "Sign In", new_user_session_path
             %div.col-xs-9.jumbotron
               = yield

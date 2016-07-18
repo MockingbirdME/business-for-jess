@@ -1,0 +1,22 @@
+= form_for [user, pet] do |f|
+  - if pet.errors.any?
+    %h4
+      = pluralize(pet.errors.count, "error")
+    %ul
+      - pet.errors.full_messages.each do |msg|
+        %li
+          = msg
+  .form-group
+    = f.label :name
+    = f.text_field :name, autofocus: true, class: "form-control", placeholder: "enter name of animal or group"
+  .form-group
+    = f.label :quantity
+    = f.number_field :quantity, class: "form-control", placeholder: "how many animals is this?"
+  .form-group
+    = f.label :animal_type
+    = f.select :animal_type, Pet.animal_types.keys.to_a, {}
+  .form-group
+    = f.label :description
+    = f.text_field :description, class: "form-control", placeholder: "tell us about your pet(s)"
+  .actions
+    = f.submit "Save", class: "btn btn-primary"

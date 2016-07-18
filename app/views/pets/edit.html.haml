@@ -1,0 +1,14 @@
+%h4
+  Update information for #{@pet.name}
+.row
+  .col-md-4
+    %p Guidelines
+    %ul
+      %li
+        If you'll need walking/sitting services for just the one pet create an individual entry
+      %li
+        If you'll need walking/sitting services for a group of the same type of animal make a single entry for the group
+      %li
+        Make sure to include any special needs for the animal in their discription
+  .col-md-8
+  = render partial: 'form', locals: {user: @pet.user, pet: @pet}
