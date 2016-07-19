@@ -30,6 +30,9 @@
       = label_tag("how long a walk should we take?")
       = f.select :duration, options_for_select([['30 minutes',30],['45 minutes',45],['1 hour', 60],['1 1/2 hour', 90],['2 hours',120]])
     .form-group
+      = f.date_select :date, use_two_digit_numbers: false, discard_year: true
+      = f.time_select :start_time, minute_step: 15, ampm: true
+    .form-group
       = f.label :details
       = f.text_area :details, rows: 3, class: "form-control", placeholder: "Enter appointment details here"
     .actions

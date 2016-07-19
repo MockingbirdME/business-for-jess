@@ -1,4 +1,5 @@
 class Appointment < ActiveRecord::Base
+  require 'date'
 
   belongs_to :user
   has_many :pets
