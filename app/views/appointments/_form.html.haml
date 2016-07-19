@@ -11,14 +11,24 @@
     = f.select :appointment_type, Appointment.appointment_types.keys.to_a,{}, id: 'appointment_type_select'
   .form-group.dog_walking_options
     %h4 What dogs would you like me to take for a walk?
-    .form-group
-      - @user.pets.each do |pet|
-        - if pet.animal_type == "dog"
-          = check_box_tag(:pet)
-          = label_tag(:pet, "#{pet.name}")
+    - if @user.pets.dog.count > 0
+      .form-group
+        - @user.pets.each do |pet|
+          - if pet.animal_type == "dog"
+            = check_box_tag(:pet)
+            = label_tag(:pet, "#{pet.name}")
+    - else
+      %h6
+        You have not added any dogs to your profile.
+    .buttons
+      = link_to "Add animals to your profile", new_user_pet_path(@user), class: 'btn btn-primary'
+    %br
     .form-group
       = label_tag("total number of dogs")
       = f.select :total_number_of_animals, options_for_select((0..3).step(1)), class: 'form-control', placeholder: 0
+    .form-group
+      = label_tag("how long a walk should we take?")
+      = f.select :duration, options_for_select([['30 minutes',30],['45 minutes',45],['1 hour', 60],['1 1/2 hour', 90],['2 hours',120]])
     .form-group
       = f.label :details
       = f.text_area :details, rows: 3, class: "form-control", placeholder: "Enter appointment details here"

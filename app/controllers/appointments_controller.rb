@@ -28,4 +28,9 @@ class AppointmentsController < ApplicationController
 
   def edit
   end
+
+  private
+    def appointment_params
+      params.require(:appointment).permit(:appointment_type, :total_number_of_animals, :details)
+    end
 end
