@@ -6,10 +6,10 @@ window.onload = function(){
   var name_div = document.getElementById('name_input');
   var email_div = document.getElementById('email_input');
   var phone_div = document.getElementById('phone_input');
-console.log("++++++++++++++++++++++++++++++++++++++++++++++++");
+console.log("++++++++++++++++++++messages++++++++++++++++++++++++++++");
 console.log(select_box);
   select_box.addEventListener('change', function(){
-console.log("++++++++++++++++++++++++++++++++++++++++++++++++");
+console.log("++++++++++++++++++++++messages++++++++++++++++++++++++++");
     var select_value = 9;
     var select_value = select_box.value;
 console.log(select_value);

@@ -14,8 +14,8 @@ Rails.application.routes.draw do
   resources :messages, only: [:index, :new, :create]
   resources :users, only: [:show] do
     resources :pets, only: [:new, :create, :edit, :update]
-    resources :appointments, only: [:new, :create, :edit, :update]
-  resources :appointments, only: [:index, :show, :destroy]  
+    resources :appointments, only: [:new, :edit]
+      post '/book_appointment' => 'appointments#book_appointment', as: :book_appointment
   end
   get 'faq' => 'welcome#faq'
   get 'services' => 'welcome#services'
