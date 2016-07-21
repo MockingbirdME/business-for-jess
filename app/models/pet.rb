@@ -1,5 +1,6 @@
 class Pet < ActiveRecord::Base
   belongs_to :user
+  has_many :appointments
 
   validates :name, presence: true
   validates :animal_type, presence: true
