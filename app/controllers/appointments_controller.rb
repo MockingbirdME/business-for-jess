@@ -26,6 +26,29 @@ class AppointmentsController < ApplicationController
     end
   end
 
+  def book_appointment
+    @user = User.find(params[:user_id])
+    @appointment = @user.appointments.build(appointment_params)
+    @validated = @appointment.validate_appointment
+    if @validated.empty?
+      if @appointment.check_for_dog_walking_conflicts(@appointment.start_time, @appointment.duration) == false
+        @appointment.save!
+        flash[:notice] = "Appointment has been added to the calendar"
+        redirect_to @user
+      else
+        flash.now[:alert] = "There is a schedule conflict with the appointment, please try agian"
+        render :new
+      end
+    else
+      @validated.each do |val|
+        flash.now[:alert] = val
+      end
+      render :new
+    end
+  end
+
+
+
   def edit
   end
 

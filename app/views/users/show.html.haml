@@ -11,9 +11,9 @@
     %h4
       phone number:
       = @user.phone
-  .buttons.pull-right
-    - if @user == current_user
-      = link_to 'Edit Info', edit_user_registration_path, class: 'btn btn-success'
+.buttons.text-center
+  - if @user == current_user
+    = link_to 'Edit Info', edit_user_registration_path, class: 'btn btn-success'
 .row
   %h3.text-center
     My Pets
@@ -46,10 +46,96 @@
         = pet.description
     .col-xs-1
       - if @user == current_user
-        = link_to 'edit', edit_user_pet_path(@user, id: pet.id)
+        = link_to 'edit', edit_user_pet_path(@user, id: pet.id), class: 'pull-right'
+
 .buttons.text-center
   - if @user == current_user
     = link_to 'Add pet', new_user_pet_path(@user), class: 'btn btn-success'
 .row
   %h3.text-center
-    My Bookings
+    Upcoming Appointments
+- if @user.appointments.where(start_time: Time.current..Time.current+1.years).empty? == false
+  .row
+    .col-xs-3
+      %h4
+        Appointment Type
+    .col-xs-3
+      %h4
+        Date
+    .col-xs-5
+      %h4
+        Details
+    .col-xs-1
+  - @user.appointments.order(:start_time).each do |app|
+    - if app.start_time.to_date >= Date.current
+      .row
+        .col-xs-3
+          %h5
+            - case app.appointment_type
+              -when 'dog_walking'
+                Dog Walking
+              -when 'small_animal_hotel'
+                Sm Animal Hotel
+              -when 'in_home_animal_care'
+                In Home Pet Care
+
+        .col-xs-3
+          %h6.small
+            = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+        .col-xs-5
+          %h6.small
+            = app.total_number_of_animals
+            - if app.appointment_type == 'dog_walking'
+              dogs for
+            -else
+              animals for
+            = app.duration
+            minutes
+            %br
+            notes:
+            = app.details
+        .col-xs-1
+          - if @user == current_user
+            = link_to 'edit', edit_user_appointment_path(@user, id: app.id), class: 'pull-right'
+- else
+  %h5.text-center
+    You have not scheduled any upcomming appointments.
+.buttons.text-center
+  - if @user == current_user
+    = link_to 'Add Appointment', new_user_appointment_path(@user), class: 'btn btn-success'
+- if @user.appointments.where(start_time: Time.current - 100.years..Time.current-1.days).empty? == false
+
+  .row
+    %h3.text-center
+      Past Appointments
+  .row
+    .col-xs-3
+      %h4
+        Appointment Type
+    .col-xs-3
+      %h4
+        Date
+    .col-xs-5
+      %h4
+        Details
+    .col-xs-1
+  - @user.appointments.order(:start_time).each do |app|
+    - if app.start_time.to_date <= Date.current
+      .row
+        .col-xs-3
+          %h5
+            - case app.appointment_type
+              -when 'dog_walking'
+                Dog Walking
+              -when 'small_animal_hotel'
+                Sm Animal Hotel
+              -when 'in_home_animal_care'
+                In Home Pet Care          .col-xs-3
+          %h6.small
+            = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+        .col-xs-5
+          %h6.small
+            = app.details
+        .col-xs-1
+        - if @user == current_user
+          = link_to 'edit', edit_user_appointment_path(@user, id: app.id), class: 'pull-right'
