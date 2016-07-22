@@ -16,23 +16,20 @@ class Appointment < ActiveRecord::Base
   end
 
 
-  def check_for_dog_walking_conflicts(potential_time,potential_duration)
-    appointments_to_check = Appointment.where(start_time: (potential_time-(135.minutes))..potential_time+((potential_duration+15).minutes))
+  def dog_walking_conflict?(potential_time,potential_duration)
+    earliest_potential_conflict = potential_time-(135.minutes)
+    end_of_potential_apt= potential_time+((potential_duration+15).minutes)
+    appointments_to_check = Appointment.where(start_time: earliest_potential_conflict..end_of_potential_apt).select("start_time, duration")
     if appointments_to_check.empty?
+
       return false
     else
-      appointments_to_check.each do |app|
-        if app.start_time < potential_time
-          if app.start_time + ((app.duration+15).minutes) <= potential_time
-            return false
-          end
-        elsif app.start_time > potential_time
-          if app.start_time > potential_time+((potential_duration+15).minutes)
-            return false
-          end
-        else
-          return true
-        end
+      appointments_to_check.any? do |app|
+        within_appointment = (app.start_time < potential_time)
+        within_appointment &&=  (app.start_time + ((app.duration+15).minutes) <= potential_time)
+        during_appointment = (app.start_time > potential_time)
+        during_appointment &&= (app.start_time > potential_time+((potential_duration+15).minutes))
+        within_appointment || during_appointment
       end
     end
   end
