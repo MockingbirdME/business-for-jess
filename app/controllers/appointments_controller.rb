@@ -31,7 +31,7 @@ class AppointmentsController < ApplicationController
     @appointment = @user.appointments.build(appointment_params)
     @validated = @appointment.validate_appointment
     if @validated.empty?
-      if @appointment.check_for_dog_walking_conflicts(@appointment.start_time, @appointment.duration) == false
+      if @appointment.dog_walking_conflict?(@appointment.start_time, @appointment.duration) == false
         @appointment.save!
         flash[:notice] = "Appointment has been added to the calendar"
         redirect_to @user

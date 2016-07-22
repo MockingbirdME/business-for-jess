@@ -7,7 +7,7 @@ window.onload = function(){
   var small_animal_hotel_options_div = document.getElementById('small_animal_hotel_options');
   var in_home_animal_care_options_div = document.getElementById('in_home_animal_care_options');
 console.log("++++++++++++++++++++appointments++++++++++++++++++++++++++++");
-console.log(select_box);
+console.log(appointment_select_box);
   appointment_select_box.addEventListener('change', function(){
 console.log("+++++++++++++++++++++appointments+++++++++++++++++++++++++++");
     var select_value = 9;
