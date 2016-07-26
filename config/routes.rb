@@ -1,15 +1,6 @@
 Rails.application.routes.draw do
 
 
-
-  get 'appointments/new'
-
-  get 'appointments/show'
-
-  get 'appointments/index'
-
-  get 'appointments/edit'
-
   devise_for :users
   resources :messages, only: [:index, :new, :create]
   resources :users, only: [:show] do

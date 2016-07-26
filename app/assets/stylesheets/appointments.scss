@@ -8,3 +8,23 @@
 #in_home_animal_care_options {
   display: none;
 }
+
+.day {
+  width: 13%;
+  border: solid;
+  margin: 1px;
+  display: inline-block;
+}
+.date {
+  font-size: 10px;
+  text-align: center;
+}
+.past_date {
+  font-size: 10px;
+  color: grey;
+}
+
+.apps {
+  font-size: 10px;
+  margin: 1px;
+}
