@@ -27,8 +27,30 @@
         You have not added any dogs to your profile;
         = link_to "click here", new_user_pet_path(@user)
         to add one.
-
     %br
+    .row#calendar_view
+      - today = DateTime.current
+      - if today.cwday !=7
+        -today.cwday.times do |n|
+          .day
+            %h6.past_date
+              = (today-(((today.cwday).day)-(n.day))).strftime("%m/%d")
+      - 14.times do |n|
+        - this_day = (today+(n.days))
+        .day
+          %h6.date
+            = this_day.strftime("%m/%d")
+          - slots = Appointment.time_slots(this_day)
+          - if slots.empty?
+            %h6.openings
+              Fully booked, no openings.
+          - else
+            %h6.openings
+              %strong
+                Openings:
+          - slots.each do |app|
+            %h6.openings
+              #{app[0].strftime("%I:%M")} - #{app[1].strftime("%I:%M")}
     .form-group
       = label_tag("total number of dogs")
       = f.select :total_number_of_animals, options_for_select((1..3).step(1)), class: 'form-control', placeholder: 0
@@ -43,65 +65,82 @@
     .actions.text-center
       = f.submit "Book Appointment", class: 'btn btn-primary'
 
-    .form-group#small_animal_hotel_options
-      %h4 What small animals would you like to book a stay for?
-      - if @user.pets.small_animals.count > 0
-        .form-group
-          - @user.pets.each do |pet|
-            - if pet.animal_type == "small_animals"
-              = check_box_tag(:pet)
-              = label_tag(:pet, "#{pet.name}")
-              &nbsp &nbsp
-          .buttons.text-center
-            = link_to "Add animals to your profile", new_user_pet_path(@user), class: 'btn btn-primary'
-      - else
-        %h6
-          You have not added any small animals to your profile;
-          = link_to "click here", new_user_pet_path(@user)
-          to add one.
 
-      %br
-      .form-group
-        = label_tag("total number of animals")
-        = f.select :total_number_of_animals, options_for_select((1..10).step(1)), class: 'form-control', placeholder: 0
-      .form-group
-        = label_tag("How many nights will they be staying?")
-        = f.select :duration, options_for_select((1..14).step(1))
-      .form-group
-        = f.date_select :start_time, start_year: Date.current.year
-      .form-group
-        = f.label :details
-        = f.text_area :details, rows: 3, class: "form-control", placeholder: "Enter appointment details here"
-      .actions.text-center
-        = f.submit "Book Appointment", class: 'btn btn-primary'
 
-      .form-group#in_home_animal_care_options
-        %h4 What animals will I be caring for in your home?
-        - if @user.pets.count > 0
-          .form-group
-            - @user.pets.each do |pet|
-              = check_box_tag(:pet)
-              = label_tag(:pet, "#{pet.name}")
-              &nbsp &nbsp
-            .buttons.text-center
-              = link_to "Add animals to your profile", new_user_pet_path(@user), class: 'btn btn-primary'
-        - else
-          %h6
-            You have not added any animals to your profile;
-            = link_to "click here", new_user_pet_path(@user)
-            to add one.
 
-        %br
-        .form-group
-          = label_tag("total number of animals")
-          = f.select :total_number_of_animals, options_for_select((1..10).step(1)), class: 'form-control', placeholder: 0
-        .form-group
-          = label_tag("How many days should I be careing for them?")
-          = f.select :duration, options_for_select((1..14).step(1))
-        .form-group
-          = f.date_select :start_time, start_year: Date.current.year
-        .form-group
-          = f.label :details
-          = f.text_area :details, rows: 3, class: "form-control", placeholder: "Enter appointment details here"
-        .actions.text-center
-          = f.submit "Book Appointment", class: 'btn btn-primary'
+
+
+
+
+
+
+
+
+
+
+
+
+
+-#
+  .form-group#small_animal_hotel_options
+    %h4 What small animals would you like to book a stay for?
+    - if @user.pets.small_animals.count > 0
+      .form-group
+        - @user.pets.each do |pet|
+          - if pet.animal_type == "small_animals"
+            = check_box_tag(:pet)
+            = label_tag(:pet, "#{pet.name}")
+            &nbsp &nbsp
+        .buttons.text-center
+          = link_to "Add animals to your profile", new_user_pet_path(@user), class: 'btn btn-primary'
+    - else
+      %h6
+        You have not added any small animals to your profile;
+        = link_to "click here", new_user_pet_path(@user)
+        to add one.
+
+    %br
+    .form-group
+      = label_tag("total number of animals")
+      = f.select :total_number_of_animals, options_for_select((1..10).step(1)), class: 'form-control', placeholder: 0
+    .form-group
+      = label_tag("How many nights will they be staying?")
+      = f.select :duration, options_for_select((1..14).step(1))
+    .form-group
+      = f.date_select :start_time, start_year: Date.current.year
+    .form-group
+      = f.label :details
+      = f.text_area :details, rows: 3, class: "form-control", placeholder: "Enter appointment details here"
+    .actions.text-center
+      = f.submit "Book Appointment", class: 'btn btn-primary'
+
+  .form-group#in_home_animal_care_options
+    %h4 What animals will I be caring for in your home?
+    - if @user.pets.count > 0
+      .form-group
+        - @user.pets.each do |pet|
+          = check_box_tag(:pet)
+          = label_tag(:pet, "#{pet.name}")
+          &nbsp &nbsp
+        .buttons.text-center
+          = link_to "Add animals to your profile", new_user_pet_path(@user), class: 'btn btn-primary'
+    - else
+      %h6
+        You have not added any animals to your profile;
+        = link_to "click here", new_user_pet_path(@user)
+        to add one.
+
+    %br
+    .form-group
+      = label_tag("total number of animals")
+      = f.select :total_number_of_animals, options_for_select((1..10).step(1)), class: 'form-control', placeholder: 0
+    .form-group
+      = label_tag("How many days should I be careing for them?")
+      = f.select :duration, options_for_select((1..14).step(1))
+    .form-group
+      = f.date_select :start_time, start_year: Date.current.year
+    .form-group
+      = f.label :details
+      = f.text_area :details, rows: 3, class: "form-control", placeholder: "Enter appointment details here"
+    .actions.text-center
+      = f.submit "Book Appointment", class: 'btn btn-primary'
