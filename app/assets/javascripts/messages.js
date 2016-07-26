@@ -1,22 +1,16 @@
 $('document').ready( function(){
 console.log("++++++++++++++++++++messages++++++++++++++++++++++++++++");
 
-  var select_box = document.getElementById('my_select');
-  if (select_box) {
-console.log(select_box);
-    select_box.addEventListener('change', function(){
+  $('#my_select').on('change', function(){
 console.log("++++++++++++++++++++++messages#change++++++++++++++++++++++++++");
     var name_div = document.getElementById('name_input');
     var email_div = document.getElementById('email_input');
     var phone_div = document.getElementById('phone_input');
-    var select_value = 9;
-    select_value = select_box.value;
-console.log(select_value);
-    if (select_value == 'none_required') {
+    if (this.value == 'none_required') {
       name_div.style.display='none';
       email_div.style.display='none';
       phone_div.style.display='none';
-    } else if (select_value == 'email') {
+    } else if (this.value == 'email') {
       email_div.style.display='block';
       name_div.style.display='block';
       phone_div.style.display='none';
@@ -27,5 +21,4 @@ console.log(select_value);
     }
     return true;
   });
-}
 });
