@@ -11,11 +11,13 @@ class Appointment < ActiveRecord::Base
   def self.time_slots(day)
     apps = Appointment.where(start_time: day.to_datetime..((day.to_datetime)+(1.day)))
     apps = apps.order(:start_time)
-    first = day.midnight+(12.hours)
-    last = day.midnight+(20.hours)
+    first = day.midnight+(16.hours)
+    last = day.midnight+(19.hours)
     openings = []
-    unless apps.empty?
-      if apps.first.start_time > (day.midnight+(12.hours)+(45.minutes))
+    if apps.empty?
+      openings << [first,last]
+    else
+      if apps.first.start_time >= (day.midnight+(16.hours)+(45.minutes))
         openings << [first, (apps.first.start_time-(15.minutes))]
       end
       if apps.count > 1
@@ -51,9 +53,13 @@ class Appointment < ActiveRecord::Base
     else
       appointments_to_check.any? do |app|
         within_appointment = (app.start_time < potential_time)
-        within_appointment &&=  (app.start_time + ((app.duration+15).minutes) <= potential_time)
+Rails.logger.info("*****#{app.start_time}*********#{potential_time}***************** #{within_appointment}")
+        within_appointment &&=  (app.start_time + ((app.duration+15).minutes) > potential_time)
+Rails.logger.info("******************************* #{within_appointment}")
         during_appointment = (app.start_time > potential_time)
-        during_appointment &&= (app.start_time > potential_time+((potential_duration+15).minutes))
+Rails.logger.info("******************************* #{during_appointment}")
+        during_appointment &&= (app.start_time < potential_time+((potential_duration+15).minutes))
+Rails.logger.info("******************************* #{during_appointment}")
         within_appointment || during_appointment
       end
     end

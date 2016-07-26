@@ -27,8 +27,7 @@
         You have not added any dogs to your profile;
         = link_to "click here", new_user_pet_path(@user)
         to add one.
-
-
+    %br
     .row#calendar_view
       - today = DateTime.current
       - if today.cwday !=7
@@ -36,22 +35,22 @@
           .day
             %h6.past_date
               = (today-(((today.cwday).day)-(n.day))).strftime("%m/%d")
-      - 3.times do |n|
+      - 14.times do |n|
         - this_day = (today+(n.days))
         .day
           %h6.date
             = this_day.strftime("%m/%d")
           - slots = Appointment.time_slots(this_day)
+          - if slots.empty?
+            %h6.openings
+              Fully booked, no openings.
+          - else
+            %h6.openings
+              %strong
+                Openings:
           - slots.each do |app|
-            %h6
+            %h6.openings
               #{app[0].strftime("%I:%M")} - #{app[1].strftime("%I:%M")}
-
-
-
-
-
-
-    %br
     .form-group
       = label_tag("total number of dogs")
       = f.select :total_number_of_animals, options_for_select((1..3).step(1)), class: 'form-control', placeholder: 0
@@ -66,6 +65,23 @@
     .actions.text-center
       = f.submit "Book Appointment", class: 'btn btn-primary'
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-#
   .form-group#small_animal_hotel_options
     %h4 What small animals would you like to book a stay for?
     - if @user.pets.small_animals.count > 0

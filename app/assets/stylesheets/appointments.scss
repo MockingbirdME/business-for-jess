@@ -11,21 +11,23 @@
 
 .day {
   width: 13%;
-  height: 100px;
+  height: 80px;
   border: solid;
-  margin: 1px;
-  display: inline-block;
+  margin: 2px;
+  float: left;
 }
 .date {
   font-size: 10px;
   text-align: center;
+  font-weight: bold;
 }
 .past_date {
   font-size: 10px;
+  text-align: center;
   color: grey;
 }
 
-.apps {
+.openings {
   font-size: 10px;
   margin: 1px;
 }
