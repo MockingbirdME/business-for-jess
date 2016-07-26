@@ -28,33 +28,6 @@
         = link_to "click here", new_user_pet_path(@user)
         to add one.
 
-    .row#calendar_view
-      - today = DateTime.current
-      - if today.cwday !=7
-        -today.cwday.times do |n|
-          .day
-            %h6.past_date
-              = (today-(((today.cwday).day)-(n.day))).strftime("%m/%d")
-
-      - 14.times do |n|
-        - this_day = (today+(n.day))
-        - time_slot = this_day.at_noon+4.hours
-        - apps = Appointment.where(start_time: time_slot..time_slot+4.hours)
-        - if this_day.sunday?
-          %br
-        .day
-          %h6.date
-            = this_day.strftime("%m/%d")
-          - if apps.empty?
-            %h6.apps
-              No appointments booked
-          - else
-            %h6.apps
-              Current appointments:
-              %br
-              - apps.each do |n|
-                = "#{((n.start_time)-(15.minutes)).strftime("%I:%M")} - #{(n.start_time + (n.duration + 15.minutes)).strftime("%I:%M")}"
-                %br
 
     .row#calendar_view
       - today = DateTime.current
@@ -63,26 +36,18 @@
           .day
             %h6.past_date
               = (today-(((today.cwday).day)-(n.day))).strftime("%m/%d")
-
-      - 14.times do |n|
-        - this_day = (today+(n.day))
-        - time_slot = this_day.at_noon+4.hours
-        - apps = Appointment.where(start_time: time_slot..time_slot+4.hours)
-        - if this_day.sunday?
-          %br
+      - 3.times do |n|
+        - this_day = (today+(n.days))
         .day
           %h6.date
             = this_day.strftime("%m/%d")
-          - if apps.empty?
-            %h6.apps
-              4:00 - 6:45
-          - else
-            - number_of_apts = apps.count
-            %h6.apps
-              - if apps.where(start_time: (time_slot-(15.minutes))..(time_slot+(45.minutes))).empty?
-                =  "4:00 - #{((apps[0].start_time)-(15.minutes)).strftime("%I:%M")}"
-              - if (apps.last.start_time + apps.last.duration.minutes) <= (time_slot + 3.hours)
-                = "#{(apps.last.start_time + (apps.last.duration + (15.minutes))).strftime("%I:%M")} - 6:45"
+          - slots = Appointment.time_slots(this_day)
+          - slots.each do |app|
+            %h6
+              #{app[0].strftime("%I:%M")} - #{app[1].strftime("%I:%M")}
+
+
+
 
 
 
