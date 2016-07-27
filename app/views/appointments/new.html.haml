@@ -5,7 +5,18 @@
   .col-md-4
     %p Guidelines
 
-  .row
-    = render partial: 'form', locals: {user: @user, appointment: @appointment}
+.row
+  %h5
+    What type of appointment would you like to book?
+    = select_tag(:appointment_form_selector, options_for_select([["dog walking", 'dog_walking'],["small animal hotel", 'small_animal_hotel'],["in home animal care", 'in_home_animal_care']]))
+
+.row#dog_walking_form
+  = render partial: 'form', locals: {user: @user, appointment: @appointment}
+
+.row#animal_hotel_form
+  = render partial: 'form2', locals: {user: @user, appointment: @appointment}
+
+.row#in_home_form
+  = render partial: 'form3', locals: {user: @user, appointment: @appointment}
 
 = javascript_include_tag 'appointments'

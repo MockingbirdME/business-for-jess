@@ -81,22 +81,27 @@
 
         .col-xs-3
           %h6.small
-            = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+            - if app.appointment_type == 'dog_walking'
+              = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+            - else
+              = "#{app.start_time.strftime('%m/%d/%g')} - #{(app.start_time + (app.duration.days)).strftime('%m/%d/%g')}"
         .col-xs-5
           %h6.small
             = app.total_number_of_animals
             - if app.appointment_type == 'dog_walking'
               dogs for
+              = app.duration
+              minutes
             -else
               animals for
-            = app.duration
-            minutes
+              = app.duration
+              days
             %br
             notes:
             = app.details
         .col-xs-1
           - if @user == current_user
-            = link_to 'edit', edit_user_appointment_path(@user, id: app.id), class: 'pull-right'
+            = link_to 'cancel', user_appointment_path(@user, id: app.id), method: :delete, class: 'pull-right'
 - else
   %h5.text-center
     You have not scheduled any upcomming appointments.

@@ -2,13 +2,19 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#small_animal_hotel_options {
-  display: none;
-}
-#in_home_animal_care_options {
-  display: none;
-}
 
+#dog_walking_form{
+  display: block;
+}
+#animal_hotel_form{
+  display: none;
+}
+#in_home_form{
+  display: none;
+}
+.hidden{
+  display: none;
+}
 .day {
   width: 13%;
   height: 80px;
