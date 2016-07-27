@@ -2,11 +2,9 @@ class Appointment < ActiveRecord::Base
   require 'date'
 
   belongs_to :user
-  has_many :pets
 
 
   enum appointment_type: [:dog_walking, :small_animal_hotel, :in_home_animal_care]
-
 
   def self.time_slots(day)
     apps = Appointment.where(start_time: day.to_datetime..((day.to_datetime)+(1.day)))
@@ -64,4 +62,5 @@ Rails.logger.info("******************************* #{during_appointment}")
       end
     end
   end
+
 end

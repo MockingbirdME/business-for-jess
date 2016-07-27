@@ -1,0 +1,29 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+   </head>
+   <body>
+     <h2>Thank you for booking your <%=@appointment.appointment_type%> appointment with us</h2>
+     <p> We look forward to seeing you and your
+          <%- if @appointment.dog_walking?%>
+            <%- if @appointment.total_number_of_animals > 1%>
+              dogs
+            <%- else %>
+              dog
+            <%end%>
+            at <%=@appointment.start_time.strftime('%l:%M%P')%> on <%=@appointment.start_time.strftime('%A, %B %e, %Y')%>
+          <%- else %>
+            <%- if @appointment.total_number_of_animals > 1%>
+              pets
+            <%- else %>
+              pet
+            <%end%>
+            on <%=@appointment.start_time.strftime('%A, %B %e, %Y')%>
+          <%end%>
+    </p>      
+     <p>
+       <%= link_to "View your appointments", user_url(@user) %>
+     </p>
+   </body>
+ </html>

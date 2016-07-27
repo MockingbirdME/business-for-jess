@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <h2>  New Message Received from
+      <%= @message.response_name%>
+    </h2>
+    <p>
+      message reads:
+      <%= @message.body%>
+      User prefers to be contacted by:
+      <%= @message.response_type%>
+      email:
+      <%= @message.response_email%>
+      phone:
+      <%= @message.response_phone%>
+    </p>
+
+  </body>
+</html>

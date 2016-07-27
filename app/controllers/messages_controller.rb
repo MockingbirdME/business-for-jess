@@ -14,6 +14,7 @@ class MessagesController < ApplicationController
     @message = Message.new(message_params)
 
     if @message.save
+      MessageMailer.send_message_notification_email(@message).deliver
       flash[:notice] = "Message Sent"
       redirect_to root_path
     else

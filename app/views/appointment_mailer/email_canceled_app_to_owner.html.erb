@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <h2>  <%=@appointment.appointment_type%> appointment canceled</h2>
+    <p>
+      User:
+      <%= @appointment.user.name%>
+      ,
+      <%= @appointment.user.phone%>
+      ,
+      <%= @appointment.user.email%>
+      Date:
+      <%= @appointment.start_time%>
+    </p>
+
+  </body>
+</html>
