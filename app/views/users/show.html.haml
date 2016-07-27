@@ -141,6 +141,3 @@
         .col-xs-5
           %h6.small
             = app.details
-        .col-xs-1
-        - if @user == current_user
-          = link_to 'edit', edit_user_appointment_path(@user, id: app.id), class: 'pull-right'

@@ -6,4 +6,11 @@ class User < ActiveRecord::Base
 
   has_many :pets
   has_many :appointments
+
+  enum role: [:standard, :owner]
+  after_initialize(:set_default_role, {if: :new_record?})
+
+  def set_default_role
+    self.role ||= :standard
+  end
 end
