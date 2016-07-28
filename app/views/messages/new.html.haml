@@ -4,6 +4,9 @@
   %span.glyphicon.glyphicon-earphone  (555)200-1234
 %div
   %h4 Send a message
-  = render partial: 'messages/form', locals:{message:@message}
+  - if current_user
+    = render partial: 'messages/user_form', locals:{message:@message, user:@user}
+  -else
+    = render partial: 'messages/guest_form', locals:{message:@message}
 
 = javascript_include_tag 'messages'

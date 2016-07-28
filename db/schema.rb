@@ -32,9 +32,12 @@ ActiveRecord::Schema.define(version: 20160727145552) do
     t.string   "response_email"
     t.string   "response_phone"
     t.string   "response_name"
+    t.integer  "user_id"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
   end
+
+  add_index "messages", ["user_id"], name: "index_messages_on_user_id"
 
   create_table "pets", force: :cascade do |t|
     t.string   "name"

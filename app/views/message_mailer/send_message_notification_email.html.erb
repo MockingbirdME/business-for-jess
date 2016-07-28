@@ -5,7 +5,7 @@
   </head>
   <body>
     <h2>  New Message Received from
-      <%= @message.response_name%>
+      <%= @message.response_name%> (<%- if @message.user != nil %> <%= @message.user.name %> <%-else%> guest <%end%>)
     </h2>
     <p>
       message reads:
