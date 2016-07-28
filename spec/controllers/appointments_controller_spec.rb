@@ -6,6 +6,7 @@ RSpec.describe AppointmentsController, type: :controller do
   let(:my_user){User.create!(name:"howard", email:"howard@walowitz.bbt",phone:"555-555-5555", password:"rappecep")}
   let(:my_owner){User.create!(name:"owner", email:"howard@walowitz.tbbt",phone:"555-555-5555", password:"rappecep", role: 1)}
   let(:my_app){Appointment.create!(user_id: my_user.id, start_time: (DateTime.current+1.day), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3)}
+  let(:non_conflicting_appointment){Appointment.create!(user_id: my_user.id, start_time: ((DateTime.current+1.day)+2.hours), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3)}
 
   context "guest" do
     describe "GET #new" do
@@ -21,7 +22,7 @@ RSpec.describe AppointmentsController, type: :controller do
       end
     end
     describe "DELETE destroy" do
-      it "returns http redirect" do
+      it "returns http success" do
         delete :destroy, user_id: my_user.id, id: my_app.id
         expect(response).to redirect_to new_user_session_path
       end
@@ -46,28 +47,38 @@ RSpec.describe AppointmentsController, type: :controller do
         expect(assigns(:appointment)).not_to be_nil
       end
     end
-    describe "book appointment" do
+    context "book appointment" do
+      let(:conflicting_appointment){post :book_appointment, user_id: my_user.id, appointment:{start_time: ((DateTime.current+1.day)+20.minutes), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3}}
+
+      let(:book_it){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+1.day), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3}}
+      before :each do
+        my_owner
+      end
       it "increases the number of appointments by one" do
-        expect {post :book_appointment, user_id: my_user.id, book_appointment:{id: 3, start_time: (DateTime.current+1.day), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3}}.to change(Appointment, :count).by(1)
+        expect {book_it}.to change(Appointment, :count).by(1)
       end
       it "assigns the new appointment to @appointments" do
-        post :book_appointment, user_id: my_user.id, book_appointment: {id: 2, start_time: (DateTime.current+1.day), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3}
+        book_it
         expect(assigns(:appointment)).to eq Appointment.last
       end
       it "redirects to the user view" do
-        post :book_appointment, user_id: my_user.id, book_appointment: {id: 4, start_time: (DateTime.current+1.day), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3}
+        book_it
         expect(response).to redirect_to my_user
+      end
+      it "doesn't book conflicting appointments" do
+        conflicting_appointment
+        expect {book_it}.to change(Appointment, :count).by(0)
       end
     end
     describe "DELETE destroy" do
       it "deletes the appointment" do
-        delete :destroy, user_id: my_user.id, id: my_app.id, owner: my_owner
+        delete :destroy, format: :js, user_id: my_user.id, id: my_app.id, owner: my_owner
         count = Appointment.where({id: my_app.id}).size
         expect(count).to eq 0
       end
-      it "redirects to user view" do
-        delete :destroy, user_id: my_user.id, id: my_app.id, owner: my_owner
-        expect(response).to redirect_to my_user
+      it "returns http success" do
+        delete :destroy, format: :js, user_id: my_user.id, id: my_app.id, owner: my_owner
+        expect(response).to have_http_status(:success)
       end
     end
   end
