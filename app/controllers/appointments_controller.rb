@@ -14,8 +14,8 @@ class AppointmentsController < ApplicationController
     if @validated.empty?
       if @appointment.dog_walking_conflict?(@appointment.start_time, @appointment.duration) == false
         @appointment.save!
-        AppointmentMailer.send_confirmation_email(@appointment).deliver
-        AppointmentMailer.email_new_app_to_owner(@appointment).deliver
+        AppointmentMailer.send_confirmation_email(@appointment).deliver_now
+        AppointmentMailer.email_new_app_to_owner(@appointment).deliver_now
         flash[:notice] = "Appointment has been added to the calendar"
         redirect_to @user
       else
@@ -34,12 +34,14 @@ class AppointmentsController < ApplicationController
       @user = User.find(params[:user_id])
       @appointment = @user.appointments.find(params[:id])
       if @appointment.destroy
-        AppointmentMailer.email_canceled_app_to_owner(@appointment).deliver
+        AppointmentMailer.email_canceled_app_to_owner(@appointment).deliver_now
         flash[:notice] = "Appointment successfully canceled"
-        redirect_to @user
       else
         flash[:alert] = "there was an error, please try again"
-        redirect_to @user
+      end
+      respond_to do |format|
+        format.html
+        format.js
       end
     end
 

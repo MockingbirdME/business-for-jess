@@ -68,7 +68,7 @@
     .col-xs-1
   - @user.appointments.order(:start_time).each do |app|
     - if app.start_time.to_date >= Date.current
-      .row
+      .row{id:"appointment-#{app.id}"}
         .col-xs-3
           %h5
             - case app.appointment_type
@@ -101,7 +101,7 @@
             = app.details
         .col-xs-1
           - if @user == current_user
-            = link_to 'cancel', user_appointment_path(@user, id: app.id), method: :delete, class: 'pull-right'
+            = link_to 'cancel', user_appointment_path(@user, id: app.id), method: :delete, class: 'pull-right', remote: true
 - else
   %h5.text-center
     You have not scheduled any upcomming appointments.
