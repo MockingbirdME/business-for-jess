@@ -105,6 +105,12 @@
 - else
   %h5.text-center
     You have not scheduled any upcomming appointments.
+
+.row
+  %h5
+    Have a question or want to check on your pet(s) during their appointment
+    = link_to 'contact us here', new_message_path
+    \.
 .buttons.text-center
   - if @user == current_user
     = link_to 'Add Appointment', new_user_appointment_path(@user), class: 'btn btn-success'
