@@ -1,5 +1,7 @@
 class Message < ActiveRecord::Base
 
+  belongs_to :user
+
   enum response_type: [:none_required, :email, :phone, :text]
   after_initialize(:set_default_response_type, {if: :new_record?})
 
