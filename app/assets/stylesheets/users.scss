@@ -27,6 +27,15 @@
   display: none;
   white-space: pre-line;
 }
+#show_calendar{
+  display: block;
+  white-space: pre-line;
+}
+#hide_calendar{
+  display: none;
+  white-space: pre-line;
+}
+
 #future_appointments_display{
   display: none;
 }

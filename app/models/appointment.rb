@@ -4,7 +4,13 @@ class Appointment < ActiveRecord::Base
   belongs_to :user
 
 
-  enum appointment_type: [:dog_walking, :small_animal_hotel, :in_home_animal_care]
+  enum appointment_type: [:dog_walking, :small_animal_hotel, :in_home_animal_care, :afternoon_off, :day_off]
+
+  after_initialize(:set_total_number_of_animals, {if: :new_record?})
+
+  def set_total_number_of_animals
+    self.total_number_of_animals ||= 0
+  end
 
   def self.time_slots(day)
     apps = Appointment.where(start_time: day.to_datetime..((day.to_datetime)+(1.day)))
@@ -66,9 +72,16 @@ class Appointment < ActiveRecord::Base
 
   def validate_appointment
     returned = []
+    if (self.appointment_type == 'dog_walking')||(self.appointment_type == 'small_animal_hotel')||(self.appointment_type == 'in_home_animal_care')
     returned << "Appointment requires a start time" if self.start_time.blank?
-    returned << "Appointment date can not be in the past" if (self.start_time < Date.current)
+    returned << "Appointment date can not be booked in the past" if (self.start_time < Date.current)
     returned << "To ensure our promptness please book your appointments for today by phone, we can be reached at (555-555-5555)" if (self.start_time.to_date == Date.current )
+    returned << "We are not accepting appointments with a start date more than two weeks out at this time, please feel free to reach out to us by phone if you need to schedule an appointment that far out (555-555-5555)" if self.start_time.to_date > (Date.current+(15.days))
+    end
+    if (self.appointment_type == 'afternoon_off')||(self.appointment_type == 'day_off')
+      returned << "A start time is needed for your time off" if self.start_time.blank?
+      returned << "Time off can not be taken in the past" if (self.start_time < Date.current)
+    end
     returned
   end
 
@@ -108,6 +121,34 @@ class Appointment < ActiveRecord::Base
     conflicts.empty? ? false : true
   end
 
+  def afternoon_off_conflict?(potential_time, potential_duration)
+      appointments_to_check = Appointment.where(appointment_type: 'dog_walking').select("start_time")
+      appointments_conflicts = appointments_to_check.where(start_time: (potential_time.midnight)..(potential_time.midnight+(potential_duration.days)))
+      appointments_conflicts.empty? ? false : true
+  end
+
+  def day_off_conflict?(potential_time, potential_duration)
+    Rails.logger.info('**************day off conflicts***************')
+    appointments_to_check = Appointment.where(start_time: (potential_time.to_date.midnight-(14.days))..(potential_time.to_date.midnight+(potential_duration.days)))
+    Rails.logger.info("*************#{appointments_to_check}**********")
+    return false if appointments_to_check.empty?
+    dog_walking_to_check = appointments_to_check.where(appointment_type: 'dog_walking')
+    Rails.logger.info("*************#{dog_walking_to_check}**********")
+
+    return true if dog_walking_to_check.where(start_time: potential_time.midnight..(potential_time.midnight+(potential_duration.days)))
+    others_to_check = (appointments_to_check.where(appointment_type: 'small_animal_hotel') + appointments_to_check.where(appointment_type: 'in_home_animal_care')).select("start_time duration")
+
+    Rails.logger.info("***********************")
+
+    others_to_check.any do |app|
+      within_appointment = (app.start_time < potential_time)
+      within_appointment &&= ((app.start_time.midnight + app.duration.days) > potential_time)
+      during_appointment = (app.start_time > potential_time)
+      during_appointment &&= (app.start_time < (potential_time+(potential_duration.days)))
+      within_appointment || during_appointment
+    end
+  end
+
   def conflict?(potential_time, potential_duration)
     case appointment_type
     when 'dog_walking'
@@ -116,6 +157,10 @@ class Appointment < ActiveRecord::Base
       small_animal_hotel_conflict?(potential_time, potential_duration)
     when 'in_home_animal_care'
       in_home_animal_care_conflict?(potential_time, potential_duration)
+    when 'afternoon_off'
+      afternoon_off_conflict?(potential_time, potential_duration)
+    when 'day_off'
+      day_off_conflict?(potential_time, potential_duration)
     end
   end
 
