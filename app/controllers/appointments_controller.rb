@@ -12,14 +12,14 @@ class AppointmentsController < ApplicationController
     @appointment = @user.appointments.build(appointment_params)
     @validated = @appointment.validate_appointment
     if @validated.empty?
-      if @appointment.dog_walking_conflict?(@appointment.start_time, @appointment.duration) == false
+      if @appointment.conflict?(@appointment.start_time, @appointment.duration) == false
         @appointment.save!
         AppointmentMailer.send_confirmation_email(@appointment).deliver_now
         AppointmentMailer.email_new_app_to_owner(@appointment).deliver_now
         flash[:notice] = "Appointment has been added to the calendar"
         redirect_to @user
       else
-        flash.now[:alert] = "There is a schedule conflict with the appointment, please try agian"
+        flash.now[:alert] = "There is a schedule conflict with the appointment, please check the calendar and try agian"
         render :new
       end
     else
