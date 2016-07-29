@@ -1,0 +1,214 @@
+.row
+  %h3.text-center
+    Today's Appointments
+  - today_appointments = Appointment.where(start_time: Date.current.to_datetime.midnight..(Date.current+1.days).to_datetime.midnight)
+  - if today_appointments.empty?
+    .row
+      %h5
+        No appointments booked for today
+  -else
+    .row
+      .col-xs-3
+        %h4
+          Appointment Type
+      .col-xs-3
+        %h4
+          Time
+      .col-xs-6
+        %h4
+          Details
+    - today_appointments.order(:appointment_type).each do |app|
+      .row
+        .col-xs-3
+          %h5
+            - case app.appointment_type
+              -when 'dog_walking'
+                Dog Walking
+              -when 'small_animal_hotel'
+                Sm Animal Hotel
+              -when 'in_home_animal_care'
+                In Home Pet Care
+
+        .col-xs-3
+          %h6.small
+            - if app.appointment_type == 'dog_walking'
+              = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+            - else
+              = "#{app.start_time.strftime('%m/%d/%g')} - #{(app.start_time + (app.duration.days)).strftime('%m/%d/%g')}"
+        .col-xs-6
+          %h6.small
+            = app.total_number_of_animals
+            - if app.appointment_type == 'dog_walking'
+              dogs for
+              = app.duration
+              minutes
+            -else
+              animals for
+              = app.duration
+              days
+            %br
+            notes:
+            = app.details
+.row.options
+  .col-xs-4
+    = button_tag "show future appointments", class: 'btn btn-info', id: 'show_future_appointments'
+    = button_tag "hide future appointments", class: 'btn btn-secondary', id: 'hide_future_appointments'
+  .col-xs-4
+    = button_tag "show past appointments", class: 'btn btn-info', id: 'show_past_appointments'
+    = button_tag "hide past appointments", class: 'btn btn-secondary', id: 'hide_past_appointments'
+  .col-xs-4
+    = button_tag "show \n messages", class: 'btn btn-info', id: 'show_messages'
+    = button_tag "hide \n messages", class: 'btn btn-secondary', id: 'hide_messages'
+
+.row#future_appointments_display
+  %h3.text-center
+    Upcoming Appointments
+  - future_appointments = Appointment.where(start_time: (Date.current+1.days).to_datetime.midnight..(Date.current+100.years).to_datetime.midnight)
+  - if future_appointments.empty?
+    .row
+      %h5
+        There are no upcomming appointments
+  -else
+    .row
+      .col-xs-3
+        %h4
+          Appointment Type
+      .col-xs-3
+        %h4
+          Time
+      .col-xs-6
+        %h4
+          Details
+    - future_appointments.order(:start_time).each do |app|
+      .row
+        .col-xs-3
+          %h5
+            - case app.appointment_type
+              -when 'dog_walking'
+                Dog Walking
+              -when 'small_animal_hotel'
+                Sm Animal Hotel
+              -when 'in_home_animal_care'
+                In Home Pet Care
+
+        .col-xs-3
+          %h6.small
+            - if app.appointment_type == 'dog_walking'
+              = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+            - else
+              = "#{app.start_time.strftime('%m/%d/%g')} - #{(app.start_time + (app.duration.days)).strftime('%m/%d/%g')}"
+        .col-xs-6
+          %h6.small
+            = app.total_number_of_animals
+            - if app.appointment_type == 'dog_walking'
+              dogs for
+              = app.duration
+              minutes
+            -else
+              animals for
+              = app.duration
+              days
+            %br
+            notes:
+            = app.details
+.row#past_appointments_display
+  %h3.text-center
+    Past Appointments
+  - past_appointments = Appointment.where(start_time: (Date.current-100.years).to_datetime.midnight..Date.current.to_datetime.midnight)
+  - if past_appointments.empty?
+    .row
+      %h5
+        There are no past appointments
+  -else
+    .row
+      .col-xs-3
+        %h4
+          Appointment Type
+      .col-xs-3
+        %h4
+          Time
+      .col-xs-6
+        %h4
+          Details
+    - past_appointments.order(:start_time).reverse.each do |app|
+      .row
+        .col-xs-3
+          %h5
+            - case app.appointment_type
+              -when 'dog_walking'
+                Dog Walking
+              -when 'small_animal_hotel'
+                Sm Animal Hotel
+              -when 'in_home_animal_care'
+                In Home Pet Care
+
+        .col-xs-3
+          %h6.small
+            - if app.appointment_type == 'dog_walking'
+              = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+            - else
+              = "#{app.start_time.strftime('%m/%d/%g')} - #{(app.start_time + (app.duration.days)).strftime('%m/%d/%g')}"
+        .col-xs-6
+          %h6.small
+            = app.total_number_of_animals
+            - if app.appointment_type == 'dog_walking'
+              dogs for
+              = app.duration
+              minutes
+            -else
+              animals for
+              = app.duration
+              days
+            %br
+            notes:
+            = app.details
+.row#messages_display
+  %h3.text-center
+    Messages
+  - messages = Message.all
+  - if messages.empty?
+    .row
+      %h5
+        No messages have been sent
+  -else
+    .row
+      .col-xs-3
+        %h4
+          Sender
+      .col-xs-3
+        %h4
+          Date
+      .col-xs-6
+        %h4
+          Message text
+    - messages.order(:created_at).reverse.each do |msg|
+      .row
+        .col-xs-3
+          %h5
+            - if msg.user != nil
+              = link_to "#{msg.response_name}", user_path(msg.user)
+            - elsif msg.response_name != ""
+              =msg.response_name
+            - else
+              Guest
+        .col-xs-3
+          %h6.small
+            = msg.created_at
+        .col-xs-6
+          %h6.small
+            = msg.body
+            %br
+          %h6.small#msg_respond_by  
+            - if msg.response_type != 'none_required'
+              respond by
+              = msg.response_type
+              \:
+              - if msg.response_type == 'email'
+                = msg.response_email
+              - elsif (msg.response_type == 'phone') || (msg.response_type == 'text')
+                = msg.response_phone
+
+
+
+
+= javascript_include_tag 'users'
