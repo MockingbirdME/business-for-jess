@@ -28,6 +28,23 @@
         to add one.
 
     %br
+    .row#calendar_view
+      - today = DateTime.current
+      - if today.cwday !=7
+        -today.cwday.times do |n|
+          .day
+            %h6.past_date
+              = (today-(((today.cwday).day)-(n.day))).strftime("%m/%d")
+      - 14.times do |n|
+        - this_day = (today+(n.days))
+        .day
+          %h6.date
+            = this_day.strftime("%m/%d")
+          %h6.date
+            - if Appointment.in_home_time?(this_day) == true
+              openings available
+            - else
+              sorry, we're fully booked
     .form-group
       = label_tag("total number of animals")
       = f.select :total_number_of_animals, options_for_select((1..10).step(1)), class: 'form-control', placeholder: 0
@@ -35,7 +52,7 @@
       = label_tag("How many days should I be careing for them?")
       = f.select :duration, options_for_select((1..14).step(1))
     .form-group
-      = f.date_select :start_time, start_year: Date.current.year
+      = f.date_select :start_time, start_year: Date.current.year, default: Date.tomorrow
     .form-group
       = f.label :details
       = f.text_area :details, rows: 3, class: "form-control", placeholder: "Enter appointment details here"
