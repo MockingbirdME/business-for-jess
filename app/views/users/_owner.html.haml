@@ -198,7 +198,7 @@
           %h6.small
             = msg.body
             %br
-          %h6.small#msg_respond_by  
+          %h6.small#msg_respond_by
             - if msg.response_type != 'none_required'
               respond by
               = msg.response_type
@@ -207,8 +207,10 @@
                 = msg.response_email
               - elsif (msg.response_type == 'phone') || (msg.response_type == 'text')
                 = msg.response_phone
-
-
+%br
+.buttons.text-center
+  - if @user == current_user
+    = link_to 'Book an appointment or schedule time off', new_user_appointment_path(@user), class: 'btn btn-success'
 
 
 = javascript_include_tag 'users'

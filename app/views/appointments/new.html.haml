@@ -6,9 +6,12 @@
     %p Guidelines
 
 .row
-  %h5
+  %h6
     What type of appointment would you like to book?
-    = select_tag(:appointment_form_selector, options_for_select([["dog walking", 'dog_walking'],["small animal hotel", 'small_animal_hotel'],["in home animal care", 'in_home_animal_care']]))
+    - if @user.role == 'standard'
+      = select_tag(:appointment_form_selector, options_for_select([["dog walking", 'dog_walking'],["small animal hotel", 'small_animal_hotel'],["in home animal care", 'in_home_animal_care']]),prompt: "select appointment type")
+    - elsif @user.role == 'owner'
+      = select_tag(:appointment_form_selector, options_for_select([["dog walking", 'dog_walking'],["small animal hotel", 'small_animal_hotel'],["in home animal care", 'in_home_animal_care'],['time off', 'time_off']]),prompt: "select appointment type")
 
 .row#dog_walking_form
   = render partial: 'form', locals: {user: @user, appointment: @appointment}
@@ -18,5 +21,6 @@
 
 .row#in_home_form
   = render partial: 'form3', locals: {user: @user, appointment: @appointment}
-
+.row#time_off_form
+  = render partial: 'form4', locals: {user: @user, appointment: @appointment}
 = javascript_include_tag 'appointments'

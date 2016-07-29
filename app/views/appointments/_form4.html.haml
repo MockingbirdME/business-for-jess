@@ -1,0 +1,18 @@
+= form_for @appointment, url: {action: "book_appointment"} do |f|
+  - if appointment.errors.any?
+    %h4
+      = pluralize(appointment.errors.count, "error")
+    %ul
+      - appointment.errors.full_messages.each do |msg|
+        %li
+          = msg
+  .form-group
+    = f.label "type of time off: "
+    = f.select :appointment_type, options_for_select([['take afternoon off','afternoon_off'],['take day off', 'day_off']]), id: 'time_off_type_select'
+  .form-group
+    = label_tag("How many days/afternoons would you like to mark off?")
+    = f.select :duration, options_for_select((1..14).step(1))
+  .form-group
+    = f.date_select :start_time, start_year: Date.current.year, default: Date.tomorrow
+  .actions.text-center
+    = f.submit "Mark time of on calendar", class: 'btn btn-primary'
