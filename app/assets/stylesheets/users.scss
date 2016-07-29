@@ -1,3 +1,41 @@
 // Place all the styles related to the Users controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+#show_future_appointments{
+  display: block;
+  white-space: pre-line;
+}
+#hide_future_appointments{
+  display: none;
+  white-space: pre-line;
+
+}
+#show_past_appointments{
+  display: block;
+  white-space: pre-line;
+}
+#hide_past_appointments{
+  display: none;
+  white-space: pre-line;
+}
+#show_messages{
+  display: block;
+  white-space: pre-line;
+}
+#hide_messages{
+  display: none;
+  white-space: pre-line;
+}
+#future_appointments_display{
+  display: none;
+}
+#past_appointments_display{
+  display: none;
+}
+#messages_display{
+  display: none;
+}
+#msg_respond_by{
+  font-size: 10px;
+}
