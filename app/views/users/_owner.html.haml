@@ -76,11 +76,13 @@
       .col-xs-3
         %h4
           Time
-      .col-xs-6
+      .col-xs-5
         %h4
           Details
+      .col-xs-1
+
     - future_appointments.order(:start_time).each do |app|
-      .row
+      .row{id:"appointment-#{app.id}"}
         .col-xs-3
           %h5
             - case app.appointment_type
@@ -90,27 +92,50 @@
                 Sm Animal Hotel
               -when 'in_home_animal_care'
                 In Home Pet Care
+              -when 'afternoon_off'
+                Afternoon Off
+              -when 'day_off'
+                Day Off
 
         .col-xs-3
           %h6.small
             - if app.appointment_type == 'dog_walking'
               = app.start_time.strftime("%m/%d/%g at %I:%M%p")
+            - elsif (app.appointment_type == 'in_home_animal_care') || app.appointment_type == 'afternoon_off' || app.appointment_type == 'day_off'
+              = "#{app.start_time.strftime('%m/%d/%g')}"
+              - if app.duration > 1
+                = "- #{(app.start_time + (app.duration.days-1)).strftime('%m/%d/%g')}"
             - else
               = "#{app.start_time.strftime('%m/%d/%g')} - #{(app.start_time + (app.duration.days)).strftime('%m/%d/%g')}"
-        .col-xs-6
+
+        .col-xs-5
           %h6.small
-            = app.total_number_of_animals
-            - if app.appointment_type == 'dog_walking'
-              dogs for
-              = app.duration
-              minutes
-            -else
-              animals for
-              = app.duration
-              days
+            - case
+              -when app.appointment_type == 'dog_walking'
+                = app.total_number_of_animals
+                dogs for
+                = app.duration
+                minutes
+              -when app.appointment_type == 'small_animal_hotel'
+                = app.total_number_of_animals
+                animals for
+                = app.duration
+                nights(s)
+              -when app.appointment_type == 'in_home_animal_care'
+                = app.total_number_of_animals
+                animals for
+                = app.duration
+                day(s)
+              -else
+                for
+                = app.duration
+                day(s)
             %br
             notes:
             = app.details
+        .col-xs-1
+          - if app.user == current_user
+            = link_to 'cancel', user_appointment_path(@user, id: app.id), method: :delete, class: 'pull-right', remote: true
 .row#past_appointments_display
   %h3.text-center
     Past Appointments
@@ -208,9 +233,93 @@
               - elsif (msg.response_type == 'phone') || (msg.response_type == 'text')
                 = msg.response_phone
 %br
+
 .buttons.text-center
+  %button.btn.btn-primary{:type => "button", :data => {:toggle => "modal", :target => "#owner_calendar_modal"}} Calendar
   - if @user == current_user
     = link_to 'Book an appointment or schedule time off', new_user_appointment_path(@user), class: 'btn btn-success'
+.modal#owner_calendar_modal
+  .modal-content
+    .modal-body
+      %button.btn.btn-secondary{ :type => 'button', :data => {:dismiss => "modal"}, class: 'pull-right'} x
+      .row#calendar_view
+        - today = DateTime.current
+        - if today.cwday !=7
+          -today.cwday.times do |n|
+            - this_day = (today-(((today.cwday).day)-(n.day)))
+            .owner_day
+              %h6.owner_past_date
+                = this_day.strftime("%m/%d")
+              - if Appointment.dog_walking_display_for_owner(this_day).empty?
+                %h6.owner_past_date
+                  No Dog Walking Appointments
+              - else
+                %h6.small
+                  Dog Walking:
+                %h6.owner_past_date
+                  - Appointment.dog_walking_display_for_owner(this_day).each do |n|
+                    = n.start_time.strftime("%l:%M")
+                    \-
+                    = (n.start_time + n.duration.minutes).strftime("%l:%M")
+              %h6.small
+                Small Animal Hotel:
+              %h6.owner_past_date
+                - if Appointment.hotel_checkins(this_day).empty?
+                  No checkins
+                - else
+                  = Appointment.hotel_checkins(this_day).count
+                  checkin(s)
+              %h6.owner_past_date
+                - if Appointment.hotel_guests(this_day).empty?
+                  No overnight guests
+                - else
+                  = Appointment.hotel_guests(this_day).count
+                  separate guest group(s)
+              %h6.small
+                In Home Care:
+              %h6.owner_past_date
+                - if Appointment.care_apps(this_day).empty?
+                  no appointments
+                - else
+                  = Appointment.care_apps(this_day).count
+                  appointment(s)
+        - 14.times do |n|
+          - this_day = (today+(n.days))
+          .owner_day
+            %h6.owner_date
+              = this_day.strftime("%m/%d")
 
-
+            - if Appointment.dog_walking_display_for_owner(this_day).empty?
+              %h6.owner_date
+                No Dog Walking Appointments
+            - else
+              %h6.small
+                Dog Walking:
+              %h6.owner_date
+                - Appointment.dog_walking_display_for_owner(this_day).each do |n|
+                  = n.start_time.strftime("%l:%M")
+                  \-
+                  = (n.start_time + n.duration.minutes).strftime("%l:%M")
+            %h6.small
+              Small Animal Hotel:
+            %h6.owner_date
+              - if Appointment.hotel_checkins(this_day).empty?
+                No checkins
+              - else
+                = Appointment.hotel_checkins(this_day).count
+                checkin(s)
+            %h6.owner_date
+              - if Appointment.hotel_guests(this_day).empty?
+                No overnight guests
+              - else
+                = Appointment.hotel_guests(this_day).count
+                separate guest group(s)
+            %h6.small
+              In Home Care:
+            %h6.owner_date
+              - if Appointment.care_apps(this_day).empty?
+                no appointments
+              - else
+                = Appointment.care_apps(this_day).count
+                appointment(s)
 = javascript_include_tag 'users'

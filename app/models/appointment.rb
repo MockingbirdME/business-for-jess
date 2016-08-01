@@ -13,11 +13,15 @@ class Appointment < ActiveRecord::Base
   end
 
   def self.time_slots(day)
+
     apps = Appointment.where(start_time: day.to_datetime..((day.to_datetime)+(1.day)))
     apps = apps.where(appointment_type: 0).order(:start_time)
     first = day.midnight+(16.hours)
     last = day.midnight+(19.hours)
     openings = []
+    if Appointment.closed_for_the_day?(day) || Appointment.closed_for_the_afternoon?(day)
+      return openings
+    end
     if apps.empty?
       openings << [first,last]
     else
@@ -39,6 +43,7 @@ class Appointment < ActiveRecord::Base
   end
 
   def self.hotel_vacancy?(day)
+    return false if Appointment.closed_for_the_day?(day)
     guests = Appointment.where(appointment_type: 1)
     guests = guests.where(start_time: ((day.to_datetime.midnight)-(13.days))..day.to_datetime.midnight)
     guests_for_night = 0
@@ -53,6 +58,7 @@ class Appointment < ActiveRecord::Base
   end
 
   def self.in_home_time?(day)
+    return false if Appointment.closed_for_the_day?(day)
     apps = Appointment.where(appointment_type: 1)
     apps = apps.where(start_time: ((day.to_datetime.midnight)-(13.days))..day.to_datetime.midnight)
     homes_for_the_day = 0
@@ -68,6 +74,62 @@ class Appointment < ActiveRecord::Base
     else
       homes_for_the_day >+ 1 ? false : true
     end
+  end
+
+  def self.closed_for_the_afternoon?(day)
+    closures = Appointment.where(appointment_type: 3)
+    closures = closures.where(start_time: day.midnight-(14.days)..day.midnight+(23.hours))
+    closures.each do |app|
+      if (app.start_time.to_date == day.to_date) || (app.start_time.to_date + ((app.duration-1).days)) > day.to_date
+        return true
+      end
+    end
+    return false
+  end
+
+  def self.closed_for_the_day?(day)
+    closures = Appointment.where(appointment_type: 4)
+    closures = closures.where(start_time: day.midnight-(14.days)..day.midnight+(23.hours))
+    closures.each do |app|
+      if (app.start_time.to_date == day.to_date) || (app.start_time.to_date + ((app.duration-1).days)) > day.to_date
+        return true
+      end
+    end
+    return false
+  end
+
+  def self.dog_walking_display_for_owner(day)
+    apps = Appointment.where(appointment_type: 0)
+    apps = apps.where(start_time: day.midnight..(day.midnight+(1.day)))
+  end
+
+  def self.hotel_checkins(day)
+    apps = Appointment.where(appointment_type: 1)
+    apps = apps.where(start_time: day.midnight..(day.midnight+(23.hours)))
+  end
+
+  def self.hotel_guests(day)
+    potential = Appointment.where(appointment_type: 1)
+    apps = []
+    potential = potential.where(start_time: (day.midnight-(14.days))..(day.midnight))
+    potential.each do |n|
+      if (n.start_time.to_date + n.duration.days) > day.to_date
+        apps << n
+      end
+    end
+    apps
+  end
+
+  def self.care_apps(day)
+    potential = Appointment.where(appointment_type: 2)
+    apps = []
+    potential = potential.where(start_time: (day.midnight-(14.days))..(day.midnight))
+    potential.each do |n|
+      if (n.start_time.to_date + n.duration.days) > day.to_date
+        apps << n
+      end
+    end
+    apps
   end
 
   def validate_appointment
@@ -86,6 +148,9 @@ class Appointment < ActiveRecord::Base
   end
 
   def dog_walking_conflict?(potential_time,potential_duration)
+    if Appointment.closed_for_the_day?(potential_time) || Appointment.closed_for_the_afternoon?(potential_time)
+      return true
+    end
     earliest_potential_conflict = potential_time-(135.minutes)
     end_of_potential_apt= potential_time+((potential_duration+15).minutes)
     appointments_to_check = Appointment.where(start_time: earliest_potential_conflict..end_of_potential_apt).select("start_time, duration")
@@ -128,23 +193,17 @@ class Appointment < ActiveRecord::Base
   end
 
   def day_off_conflict?(potential_time, potential_duration)
-    Rails.logger.info('**************day off conflicts***************')
     appointments_to_check = Appointment.where(start_time: (potential_time.to_date.midnight-(14.days))..(potential_time.to_date.midnight+(potential_duration.days)))
-    Rails.logger.info("*************#{appointments_to_check}**********")
     return false if appointments_to_check.empty?
-    dog_walking_to_check = appointments_to_check.where(appointment_type: 'dog_walking')
-    Rails.logger.info("*************#{dog_walking_to_check}**********")
-
-    return true if dog_walking_to_check.where(start_time: potential_time.midnight..(potential_time.midnight+(potential_duration.days)))
-    others_to_check = (appointments_to_check.where(appointment_type: 'small_animal_hotel') + appointments_to_check.where(appointment_type: 'in_home_animal_care')).select("start_time duration")
-
-    Rails.logger.info("***********************")
-
-    others_to_check.any do |app|
-      within_appointment = (app.start_time < potential_time)
-      within_appointment &&= ((app.start_time.midnight + app.duration.days) > potential_time)
-      during_appointment = (app.start_time > potential_time)
-      during_appointment &&= (app.start_time < (potential_time+(potential_duration.days)))
+    dog_walking_to_check = Appointment.where(start_time: (potential_time.to_date.midnight)..(potential_time.to_date.midnight+(potential_duration.days))+(23.hours))
+    dog_walking_to_check = dog_walking_to_check.where(appointment_type: 0)
+    return true if (dog_walking_to_check.count > 0)
+    others_to_check = appointments_to_check.where(appointment_type: 1) + appointments_to_check.where(appointment_type: 2)
+    others_to_check.any? do |ap|
+      within_appointment = (ap.start_time < potential_time)
+      within_appointment &&= ((ap.start_time + ap.duration.days) > potential_time)
+      during_appointment = (ap.start_time > potential_time)
+      during_appointment &&= (ap.start_time < (potential_time+(potential_duration.days)))
       within_appointment || during_appointment
     end
   end
