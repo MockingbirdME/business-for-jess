@@ -40,3 +40,34 @@
   font-size: 10px;
   margin: 1px;
 }
+.modal{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#owner_calendar_modal{
+  position: fixed;
+  top: unset;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%
+}
+.owner_day {
+  width: 13%;
+  height: 200px;
+  border: solid;
+  margin: 2px;
+  float: left;
+}
+.owner_date {
+  font-size: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+.owner_past_date {
+  font-size: 10px;
+  text-align: center;
+  color: grey;
+}
