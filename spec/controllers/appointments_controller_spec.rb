@@ -49,7 +49,17 @@ RSpec.describe AppointmentsController, type: :controller do
     end
     context "book appointment" do
       let(:conflicting_appointment){post :book_appointment, user_id: my_user.id, appointment:{start_time: ((DateTime.current+1.day)+20.minutes), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3}}
+      let(:conflicting_appointment_day_off){post :book_appointment, user_id: my_user.id, appointment:{start_time: (DateTime.current+1.day), duration: 7, appointment_type: 'day_off'}}
+      let(:conflicting_hotel_1){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+2), duration: 2, appointment_type: 'small_animal_hotel', total_number_of_animals: 3}}
+      let(:conflicting_hotel_2){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+2), duration: 2, appointment_type: 'small_animal_hotel', total_number_of_animals: 3}}
+      let(:conflicting_hotel_3){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+2), duration: 2, appointment_type: 'small_animal_hotel', total_number_of_animals: 3}}
+      let(:conflicting_hotel_for_day_off_2){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+12.days), duration: 4, appointment_type: 'small_animal_hotel', total_number_of_animals: 3}}
 
+      let(:book_it_hotel){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+2), duration: 2, appointment_type: 'small_animal_hotel', total_number_of_animals: 3}}
+      let(:book_it_in_home){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+2), duration: 3, appointment_type: 'in_home_animal_care', total_number_of_animals: 3}}
+      let(:book_it_afternoon_off){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+1.day), duration: 3, appointment_type: 'afternoon_off', total_number_of_animals: 3}}
+      let(:book_it_day_off){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current), duration: 3, appointment_type: 'day_off', total_number_of_animals: 3}}
+      let(:book_it_day_off_2){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+13.days), duration: 3, appointment_type: 'day_off', total_number_of_animals: 3}}
       let(:book_it){post :book_appointment, user_id: my_user.id, appointment:{ start_time: (DateTime.current+1.day), duration: 30, appointment_type: 'dog_walking', total_number_of_animals: 3}}
       before :each do
         my_owner
@@ -67,7 +77,18 @@ RSpec.describe AppointmentsController, type: :controller do
       end
       it "doesn't book conflicting appointments" do
         conflicting_appointment
+        conflicting_appointment_day_off
+        conflicting_hotel_1
+        conflicting_hotel_2
+        conflicting_hotel_3
+        conflicting_hotel_for_day_off_2
         expect {book_it}.to change(Appointment, :count).by(0)
+        expect {book_it_hotel}.to change(Appointment, :count).by(0)
+        expect {book_it_in_home}.to change(Appointment, :count).by(0)
+        expect {book_it_afternoon_off}.to change(Appointment, :count).by(0)
+        expect {book_it_day_off}.to change(Appointment, :count).by(0)
+        expect {book_it_day_off_2}.to change(Appointment, :count).by(0)
+
       end
     end
     describe "DELETE destroy" do
