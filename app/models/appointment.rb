@@ -89,7 +89,7 @@ class Appointment < ActiveRecord::Base
 
   def self.closed_for_the_day?(day)
     closures = Appointment.where(appointment_type: 4)
-    closures = closures.where(start_time: day.midnight-(14.days)..day.midnight+(23.hours))
+    closures = closures.where(start_time: (day.midnight-(14.days))..(day.midnight+(23.hours)))
     closures.each do |app|
       if (app.start_time.to_date == day.to_date) || (app.start_time.to_date + ((app.duration-1).days)) > day.to_date
         return true
